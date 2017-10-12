@@ -1,3 +1,6 @@
-if (global.TNS_WEBPACK) {
-    global.registerModule("main-page", () => require("./main-page"));
+if (global["TNS_WEBPACK"]) {
+    require("tns-core-modules/bundle-entry-points");
+    global.registerModule("main-page", function () { return require("./main-page"); });
+    // register more application modules here following the example above
 }
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYnVuZGxlLWNvbmZpZy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImJ1bmRsZS1jb25maWcudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsRUFBRSxDQUFDLENBQUMsTUFBTSxDQUFDLGFBQWEsQ0FBQyxDQUFDLENBQUMsQ0FBQztJQUN4QixPQUFPLENBQUMsc0NBQXNDLENBQUMsQ0FBQztJQUNoRCxNQUFNLENBQUMsY0FBYyxDQUFDLFdBQVcsRUFBRSxjQUFjLE1BQU0sQ0FBQyxPQUFPLENBQUMsYUFBYSxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQztJQUNuRixxRUFBcUU7QUFDekUsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImlmIChnbG9iYWxbXCJUTlNfV0VCUEFDS1wiXSkge1xuICAgIHJlcXVpcmUoXCJ0bnMtY29yZS1tb2R1bGVzL2J1bmRsZS1lbnRyeS1wb2ludHNcIik7XG4gICAgZ2xvYmFsLnJlZ2lzdGVyTW9kdWxlKFwibWFpbi1wYWdlXCIsIGZ1bmN0aW9uICgpIHsgcmV0dXJuIHJlcXVpcmUoXCIuL21haW4tcGFnZVwiKTsgfSk7XG4gICAgLy8gcmVnaXN0ZXIgbW9yZSBhcHBsaWNhdGlvbiBtb2R1bGVzIGhlcmUgZm9sbG93aW5nIHRoZSBleGFtcGxlIGFib3ZlXG59Il19

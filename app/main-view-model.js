@@ -1,121 +1,41 @@
-'use strict'
-
-var Observable = require("data/observable").Observable;
-var Image = require("ui/image");
-var fs = require("file-system");
-
-var frame = require("ui/frame");
-var page = require("ui/page");
-var animation = require("ui/animation");
-var enums = require("ui/enums");
-
-function createViewModel() {
-    var viewModel = new Observable();
-    var pathToBW = "";
-    var appDir = fs.knownFolders.currentApp().path;
-    var originalImage = appDir + "/zenyatta.jpg"
-    viewModel.image = originalImage;
-    viewModel.indicator = appDir + "/activity_indicator.png";
-
-    var anim;
-    var lbl1Anim;
-
-    viewModel.reset = function () {
-        viewModel.set("image", originalImage);
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var observable_1 = require("data/observable");
+var worker = new Worker("./worker");
+var HelloWorldModel = (function (_super) {
+    __extends(HelloWorldModel, _super);
+    function HelloWorldModel() {
+        var _this = _super.call(this) || this;
+        // Initialize default values.
+        _this._counter = 42;
+        _this.updateMessage();
+        return _this;
     }
-
-    viewModel.animateLbl = function () {
-        if (lbl1Anim && lbl1Anim.isPlaying) {
-            lbl1Anim.cancel();
-
-            return;
-        }
-
-        let lbl1 = getViewById("lbl1");
-        lbl1Anim = new animation.Animation([{
-            target: lbl1,
-            rotate: 720,
-            translate: { x: 100, y: 100 },
-            opacity: 0.5,
-            iterations: Number.POSITIVE_INFINITY,
-            duration: 2000
-        }, {
-                target: lbl1,
-                scale: { x: 3, y: 3 },
-                duration: 2000,
-                iterations: Number.POSITIVE_INFINITY
-            }]);
-
-        lbl1Anim.play().catch(function (e) {
-            console.log('Animation failed: ' + e);
-        });
-    }
-
-    viewModel.percents = 0;
-
-    viewModel.hideLoader = true;
-    viewModel.grayscaleOnWorker = function () {
-        var w;
-        if (global.TNS_WEBPACK) {
-            var GrayscaleWorker = require("nativescript-worker-loader!./workers/grayscaler.js");
-            w = new GrayscaleWorker();
-        } else {
-            w = new Worker("./workers/grayscaler.js");
-        }
-
-        anim = new animation.Animation([{
-            target: getViewById("img2"),
-            rotate: 360,
-            iterations: Number.POSITIVE_INFINITY,
-            duration: 2000
-        }]);
-
-        anim.play().catch(function (e) {
-            console.log('Animation failed: ' + e);
-        });
-
-        viewModel.set("percents", 0);
-
-        w.postMessage({ src: originalImage, fileName: "zenyatta-bw.jpg", appDir: appDir });
-        viewModel.set("hideLoader", false);
-
-        w.onmessage = function (msg) {
-            if (msg.data.res == "progress") {
-                viewModel.set("percents", msg.data.value);
-                return;
+    Object.defineProperty(HelloWorldModel.prototype, "message", {
+        get: function () {
+            return this._message;
+        },
+        set: function (value) {
+            if (this._message !== value) {
+                this._message = value;
+                this.notifyPropertyChange('message', value);
             }
-
-            if (msg.data.res == "success") {
-                pathToBW = msg.data.src;
-                console.log("Inside success callback of grayscaleOnWorker : " + pathToBW);
-                // w.postMessage("close");
-                w.terminate();
-                viewModel.set("hideLoader", true);
-                viewModel.set("image", pathToBW);
-                viewModel.set("percents", 100);
-
-                anim.cancel();
-            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    HelloWorldModel.prototype.onTap = function () {
+        worker.postMessage("HAAAAAAI");
+    };
+    HelloWorldModel.prototype.updateMessage = function () {
+        if (this._counter <= 0) {
+            this.message = 'Hoorraaay! You unlocked the NativeScript clicker achievement!';
         }
-
-        w.onerror = function (e) {
-            console.log('Error from worker: ' + e.message);
-            console.dir(e);
-            anim.cancel();
-            viewModel.set("percents", "Error");
+        else {
+            this.message = this._counter + " taps left";
         }
-    }
-
-    return viewModel;
-}
-
-function getViewById(viewId) {
-    let currentPage;
-    let topFrame = frame.topmost();
-    currentPage = topFrame.currentPage;
-
-    let v = currentPage.getViewById(viewId);
-    return v;
-}
-
-exports.createViewModel = createViewModel;
+    };
+    return HelloWorldModel;
+}(observable_1.Observable));
+exports.HelloWorldModel = HelloWorldModel;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibWFpbi12aWV3LW1vZGVsLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsibWFpbi12aWV3LW1vZGVsLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsOENBQTZDO0FBRTdDLElBQUksTUFBTSxHQUFHLElBQUksTUFBTSxDQUFDLFVBQVUsQ0FBQyxDQUFDO0FBQ3BDO0lBQXFDLG1DQUFVO0lBSzNDO1FBQUEsWUFDSSxpQkFBTyxTQUtWO1FBSEcsNkJBQTZCO1FBQzdCLEtBQUksQ0FBQyxRQUFRLEdBQUcsRUFBRSxDQUFDO1FBQ25CLEtBQUksQ0FBQyxhQUFhLEVBQUUsQ0FBQzs7SUFDekIsQ0FBQztJQUVELHNCQUFJLG9DQUFPO2FBQVg7WUFDSSxNQUFNLENBQUMsSUFBSSxDQUFDLFFBQVEsQ0FBQztRQUN6QixDQUFDO2FBRUQsVUFBWSxLQUFhO1lBQ3JCLEVBQUUsQ0FBQyxDQUFDLElBQUksQ0FBQyxRQUFRLEtBQUssS0FBSyxDQUFDLENBQUMsQ0FBQztnQkFDMUIsSUFBSSxDQUFDLFFBQVEsR0FBRyxLQUFLLENBQUM7Z0JBQ3RCLElBQUksQ0FBQyxvQkFBb0IsQ0FBQyxTQUFTLEVBQUUsS0FBSyxDQUFDLENBQUE7WUFDL0MsQ0FBQztRQUNMLENBQUM7OztPQVBBO0lBU00sK0JBQUssR0FBWjtRQUNJLE1BQU0sQ0FBQyxXQUFXLENBQUMsVUFBVSxDQUFDLENBQUM7SUFDbkMsQ0FBQztJQUVPLHVDQUFhLEdBQXJCO1FBQ0ksRUFBRSxDQUFDLENBQUMsSUFBSSxDQUFDLFFBQVEsSUFBSSxDQUFDLENBQUMsQ0FBQyxDQUFDO1lBQ3JCLElBQUksQ0FBQyxPQUFPLEdBQUcsK0RBQStELENBQUM7UUFDbkYsQ0FBQztRQUFDLElBQUksQ0FBQyxDQUFDO1lBQ0osSUFBSSxDQUFDLE9BQU8sR0FBTSxJQUFJLENBQUMsUUFBUSxlQUFZLENBQUM7UUFDaEQsQ0FBQztJQUNMLENBQUM7SUFDTCxzQkFBQztBQUFELENBQUMsQUFuQ0QsQ0FBcUMsdUJBQVUsR0FtQzlDO0FBbkNZLDBDQUFlIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgT2JzZXJ2YWJsZSB9IGZyb20gJ2RhdGEvb2JzZXJ2YWJsZSc7XG5cbnZhciB3b3JrZXIgPSBuZXcgV29ya2VyKFwiLi93b3JrZXJcIik7XG5leHBvcnQgY2xhc3MgSGVsbG9Xb3JsZE1vZGVsIGV4dGVuZHMgT2JzZXJ2YWJsZSB7XG5cbiAgICBwcml2YXRlIF9jb3VudGVyOiBudW1iZXI7XG4gICAgcHJpdmF0ZSBfbWVzc2FnZTogc3RyaW5nO1xuXG4gICAgY29uc3RydWN0b3IoKSB7XG4gICAgICAgIHN1cGVyKCk7XG5cbiAgICAgICAgLy8gSW5pdGlhbGl6ZSBkZWZhdWx0IHZhbHVlcy5cbiAgICAgICAgdGhpcy5fY291bnRlciA9IDQyO1xuICAgICAgICB0aGlzLnVwZGF0ZU1lc3NhZ2UoKTtcbiAgICB9XG5cbiAgICBnZXQgbWVzc2FnZSgpOiBzdHJpbmcge1xuICAgICAgICByZXR1cm4gdGhpcy5fbWVzc2FnZTtcbiAgICB9XG5cbiAgICBzZXQgbWVzc2FnZSh2YWx1ZTogc3RyaW5nKSB7XG4gICAgICAgIGlmICh0aGlzLl9tZXNzYWdlICE9PSB2YWx1ZSkge1xuICAgICAgICAgICAgdGhpcy5fbWVzc2FnZSA9IHZhbHVlO1xuICAgICAgICAgICAgdGhpcy5ub3RpZnlQcm9wZXJ0eUNoYW5nZSgnbWVzc2FnZScsIHZhbHVlKVxuICAgICAgICB9XG4gICAgfVxuXG4gICAgcHVibGljIG9uVGFwKCkge1xuICAgICAgICB3b3JrZXIucG9zdE1lc3NhZ2UoXCJIQUFBQUFBSVwiKTtcbiAgICB9XG5cbiAgICBwcml2YXRlIHVwZGF0ZU1lc3NhZ2UoKSB7XG4gICAgICAgIGlmICh0aGlzLl9jb3VudGVyIDw9IDApIHtcbiAgICAgICAgICAgIHRoaXMubWVzc2FnZSA9ICdIb29ycmFhYXkhIFlvdSB1bmxvY2tlZCB0aGUgTmF0aXZlU2NyaXB0IGNsaWNrZXIgYWNoaWV2ZW1lbnQhJztcbiAgICAgICAgfSBlbHNlIHtcbiAgICAgICAgICAgIHRoaXMubWVzc2FnZSA9IGAke3RoaXMuX2NvdW50ZXJ9IHRhcHMgbGVmdGA7XG4gICAgICAgIH1cbiAgICB9XG59Il19

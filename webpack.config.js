@@ -127,12 +127,20 @@ function getRules() {
             ]
         },
 
+
+        // Compile TypeScript files, replace templateUrl and styleUrls.
+        {
+            test: /\.ts$/,
+            loaders: [
+                "awesome-typescript-loader",
+            ]
+        }
+
     ];
 }
 
 function getPlugins(platform, env) {
     let plugins = [
-        new NativeScriptWorkerPlugin(),
         new ExtractTextPlugin(mainSheet),
 
         // Vendor libs go to the vendor.js chunk
@@ -160,6 +168,9 @@ function getPlugins(platform, env) {
             "./vendor",
             "./bundle",
         ]),
+        
+        // Support for web workers since v3.2
+        new NativeScriptWorkerPlugin(),
 
         // Generate report files for bundles content
         new BundleAnalyzerPlugin({
@@ -188,7 +199,9 @@ function getPlugins(platform, env) {
 // Resolve platform-specific modules like module.android.js
 function getExtensions(platform) {
     return Object.freeze([
+        `.${platform}.ts`,
         `.${platform}.js`,
+        ".ts",
         ".js",
         ".css",
         `.${platform}.css`,
